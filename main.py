@@ -1,4 +1,4 @@
-from webScraper import WebScraper
+from webScraper import WebScraper, notFound
 from game import Game
 
 def game_round():
@@ -12,6 +12,7 @@ def game_round():
     # pega o título da página e printa
     # armazena o título nas páginas passadas
     # pega os links da página em uma lista e printa eles
+      # se não tiver links, é gamewover
     
     # usuário escolhe uma próximo página
       # confere se é o objetivo
@@ -37,8 +38,14 @@ def main():
   # novo jogo
 
 def testes():
-  print("au")
-  WebScraper.get_title("a")
+  url = 'https://en.wikipedia.org/wiki/The_BMJ'
+  try:
+    # print(WebScraper.get_title(url))
+    pass
+  except notFound as e:
+    print(f"error! {e}")
+
+  print(WebScraper.get_vital_articles())
 
 if __name__ == "__main__":
   testes()
