@@ -5,7 +5,7 @@ class WebScraper:
   def get_title(page):
     '''gets the title of the page'''
     url = 'https://en.wikipedia.org/wiki/The_BMJ'
-    headers = {'User-Agent': 'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)'}
+    headers = {'User-Agent': 'WikipediaGameBot/0.0 (https://github.com/felipepifranco/Wikipedia-game.git)'}
 
     res = requests.get(url, headers=headers)
     print(res.status_code)
