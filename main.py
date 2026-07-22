@@ -9,8 +9,9 @@ def game_round():
   target_page_title = WebScraper.get_title(target_page)
 
   game = Game(first_page, first_page_title, target_page, target_page_title)
+  game_ended = False
 
-  while(game.won == False):
+  while(game_ended == False):
     # round set up
     current_page = WebScraper.get_title_and_links(game.current_url)
 
@@ -23,13 +24,11 @@ def game_round():
     prPageName(current_page["title"])
     
     # links print
-    i = 0
     prWarning("\nLinks in it:")
-    for link in current_page["links"]:
-      print(f'{i} - {link[TITLE]}') 
-      i +=1
+
+    has_ended, last_index = Game.print_pages_end(current_page["links"])
     
-    if i == 0:
+    if last_index == -1:
       prError("You've reach a page that has no links! Game over!")
       break
     
@@ -37,23 +36,31 @@ def game_round():
     print("\n Chose a number to go to that page.\n" \
     "('exit' to give up, 'history' to see all pages visited)")
     while True:
-      try:
-        user_action = int(input())
-      except ValueError:
-        print("Invalid input! Choose a number or a special command!")
+      user_action = input()
 
       if user_action == 'exit':
+        game_ended = True
         break
 
       elif user_action == 'history':
         game.show_history()
+        print()
+        input("press enter to continue\n")
+        break
+
+      elif user_action == '+' and has_ended == False:
+        Game.print_pages_end(current_page["links"], last_index)
+        break
 
       else:
         try:
+          user_action = int(user_action)
           if user_action <= 0: raise IndexError
-          next_page = current_page["links"][user_action]
+          next_page = current_page["links"][user_action -1]
           game.register_page(next_page)
           break
+        except ValueError:
+          print("Invalid input! Choose a number or a special command!")
         except IndexError:
           print("invalid number! Choose one in range")
 
@@ -95,6 +102,12 @@ def testes():
     print(f"error! {e}")
 
   print(WebScraper.get_vital_articles())
+
+def testes():
+  url = "https://en.wikipedia.org/wiki/ABN_(TV_station)"
+  info = WebScraper.get_title_and_links(url)
+  print(info["links"])
+
 
 if __name__ == "__main__":
   main()

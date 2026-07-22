@@ -42,19 +42,18 @@ class WebScraper:
     # links
     body = soup.find(id="bodyContent")
     links = [] # tuple list (title, url)
-    i = 0
+    
     if body:
       for tag in body.find_all('a', href=True):
         href = tag['href']
 
-        if '/wiki/' in href and ':' not in href.replace("https:", "") and 'wikidata' not in href:
+        if '/wiki/' in href and ':' not in href.replace("https:", "") and 'wikidata' not in href and '?' not in href:
           full_url = urljoin('https://en.wikipedia.org', href)
           title_from_url = (href.split('/wiki/')[-1].replace('_', ' '))
           link_title = tag.get('title', title_from_url)
 
           links.append((link_title, full_url))
-          i += 1
-          if i >= 500: break
+          
     else:
       raise notFound("Invalid page")  
     

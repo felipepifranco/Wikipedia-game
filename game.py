@@ -10,7 +10,15 @@ class Game:
 
   def show_history(self):
     """Prints all pages visited so far."""
-    pass
+    prSeparator()
+
+    prWarning("Number of pages visited: ", "")
+    print()
+    print(len(self.page_history))
+
+    prWarning("List of visited pages:")
+    for page in self.page_history:
+      print(page)
 
   def register_page(self, page_info):
     '''
@@ -32,13 +40,56 @@ class Game:
     shows game history (page history and counter)
     register history into the ranking
     '''
+    print()
+    prSeparator()
+
+    if self.won == False:
+      prError("You have lost!")
+    elif self.won == True:
+      prWelcome("You have won! Congratulations")
+
+    
+    self.show_history()
+    prSeparator()
+    print()
+
+    
     pass
+
+  @staticmethod
+  def print_pages_end(links_list, index_begin=0):
+    '''prints all pages
+       has a limit of 100. If it passed that, it warns the user
+       to print the remaining, it is uses:
+       - the first return value, that is True only if all links were already print
+       - the index_begin, which represents the value that the last print stopped (and is the second return value)
+       returns: (has_ended, last_index)
+       '''
+    if len(links_list) == 0:
+      print("No links!")
+      return True, -1
+    elif index_begin >= len(links_list):
+      raise IndexError
+
+    limit = 0
+    while index_begin < len(links_list) and limit < 100:
+      link = links_list[index_begin]
+      print(f'{index_begin +1} - {link[TITLE]}') 
+      index_begin += 1
+      limit +=1
+
+    if index_begin >= len(links_list):
+      return True, index_begin
+    else:
+      prSubMsg("Type '+' to continue seeing the links...")
+      return False, index_begin      
+
+
 
 class Ranking:
   @staticmethod
   def show_ranking():
-    '''
-    prints ranking (from a json file)  
+    '''prints ranking (from a json file)  
     '''
 
   @staticmethod
