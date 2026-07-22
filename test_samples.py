@@ -1,5 +1,10 @@
 from game import *
+from utils import *
+from scoreboard import *
+
 import pytest
+import os
+import shutil
 
 @pytest.fixture
 def set_up_game():
@@ -185,3 +190,93 @@ class Test_game:
     assert index_continue == 101
     assert has_ended == True
     assert '101 - World War II\n' == captured.out
+
+class Test_scoreboard:
+  @pytest.fixture
+  def backup(self):
+    backup_created = False
+    backup_file = "score_backup"
+    
+    if os.path.exists(FILE_NAME):
+      shutil.copy(FILE_NAME, backup_file)
+      backup_created = True
+        
+      os.remove(FILE_NAME)
+
+    yield 
+
+    if backup_created:
+      shutil.move(backup_file, FILE_NAME)
+
+  def test_register(self, backup, set_up_game, subtests):
+    with subtests.test("One page"):
+      ScoreBoard.register(set_up_game)
+      with open(FILE_NAME, 'r') as file:
+        score_board = json.load(file)
+  
+      now = datetime.now()
+      today = now.strftime("%d-%m-%Y")
+      correct_board = [
+        {
+          "Number of visited pages": 1,
+          "First page": "The BMJ",
+          "Target page": "Dog",
+          "Date": today,
+          "Pages visited": [
+            "The BMJ"
+          ]
+        }
+      ]
+      assert score_board == correct_board
+
+    with subtests.test("Multiple games"):
+      second_game = Game(
+          start_page="https://en.wikipedia.org/wiki/Cat",
+          start_page_name="Cat",
+          target_page="https://en.wikipedia.org/wiki/Mouse",
+          target_name="Mouse",
+      )
+      second_game.page_history.extend(["Pringles", "Mouse"])
+      second_game.round = 3
+
+      ScoreBoard.register(second_game)
+
+      with open(FILE_NAME, "r") as file:
+        score_board = json.load(file)
+
+      expected_two_games = [
+        correct_board[0],  # First game from the previous subtest
+        {
+          "Number of visited pages": 3,
+          "First page": "Cat",
+          "Target page": "Mouse",
+          "Date": today,
+          "Pages visited": ["Cat", "Pringles", "Mouse"],
+        },
+      ]
+      assert score_board == expected_two_games
+
+  def test_register_multiple_pages(self, backup, set_up_game):
+    set_up_game.page_history.extend(["Cat", "Mouse", "Pringles", "Cow"])
+    set_up_game.round = 5
+
+    now = datetime.now()
+    today = now.strftime("%d-%m-%Y")
+
+    ScoreBoard.register(set_up_game)
+    with open(FILE_NAME, 'r') as file:
+      score_board2 = json.load(file)
+
+    correct_board2 = [
+      {
+        "Number of visited pages": 5,
+        "First page": "The BMJ",
+        "Target page": "Dog",
+        "Date": today,
+      "Pages visited": ["The BMJ","Cat", "Mouse", "Pringles", "Cow"]
+      }
+    ]
+
+    assert score_board2 == correct_board2
+
+  

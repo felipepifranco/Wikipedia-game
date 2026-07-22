@@ -1,4 +1,6 @@
 from utils import *
+from scoreboard import ScoreBoard
+
 class Game:
   def __init__(self, start_page, start_page_name, target_page, target_name):
     self.round = 1
@@ -38,7 +40,7 @@ class Game:
     '''
     checks if user has won or lost, and display a message according to that
     shows game history (page history and counter)
-    register history into the ranking
+    register history into the scoreboard
     '''
     print()
     prSeparator()
@@ -52,9 +54,7 @@ class Game:
     self.show_history()
     prSeparator()
     print()
-
-    
-    pass
+    ScoreBoard.register(self)
 
   @staticmethod
   def print_pages_end(links_list, index_begin=0):
@@ -82,19 +82,30 @@ class Game:
       return True, index_begin
     else:
       prSubMsg("Type '+' to continue seeing the links...")
-      return False, index_begin      
-
-
-
-class Ranking:
-  @staticmethod
-  def show_ranking():
-    '''prints ranking (from a json file)  
-    '''
+      return False, index_begin 
 
   @staticmethod
-  def register_in_ranking():
-    '''
-    register a new game history into the ranking
-    must be called when a game ends
-    '''
+  def print_rules():
+    '''prints the Wikipedia Game rules and available commands.'''
+    prSeparator()
+    prWelcome("\n         WIKIPEDIA GAME RULES     ")
+    prSeparator()
+    
+    prPageName("\nOBJECTIVE:") 
+    print('Navigate from a starting Wikipedia article to a target article using only the links within each page in as few clicks as possible.')
+
+    prPageName("\nHOW TO PLAY:") 
+    print('1. You start on a randomly assigned Wikipedia page.\n' \
+    '2. You will see a target page you need to reach.\n' \
+    '3. In each round, choose a numbered link to travel to that page.\n' \
+    '4. You win when you land on the target page!')
+
+    prPageName("\nCOMMANDS:")
+    print("- <number> : Go to the corresponding page link.\n"
+    "- '+'      : View the next batch of links (if there are more than 100).\n"
+    "- 'history': See all pages you have visited so far.\n"
+    "- 'exit'   : Give up and return to the main menu.\n")
+
+    prSeparator()    
+
+

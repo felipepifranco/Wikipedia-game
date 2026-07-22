@@ -1,6 +1,8 @@
 TITLE = 0
 LINK = 1
 
+FILE_NAME = "scoreboard.json"
+
 def prSeparator():
   print("=============================================")
 

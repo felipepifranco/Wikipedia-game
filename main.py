@@ -1,5 +1,6 @@
 from webScraper import WebScraper, notFound
 from game import Game
+from scoreboard import ScoreBoard
 from utils import *
 
 def game_round():
@@ -16,7 +17,9 @@ def game_round():
     current_page = WebScraper.get_title_and_links(game.current_url)
 
     prSeparator()
+    print()
     prPageName(f"Target: {game.target_name}")
+    print()
     prWarning(f"Round {game.round}")
     prWarning("Current page:")
 
@@ -33,7 +36,7 @@ def game_round():
       break
     
     # user input
-    print("\n Chose a number to go to that page.\n" \
+    print("\nChoose a number to go to that page.\n" \
     "('exit' to give up, 'history' to see all pages visited)")
     while True:
       user_action = input()
@@ -71,7 +74,7 @@ def main():
   prWelcome("Welcome to the wikipedia game!") 
   while True:
     print("What do ou want to do?\n" \
-    "1 - see ranking\n" \
+    "1 - see scoreboard\n" \
     "2 - see game rules\n" \
     "3 - play new game\n" \
     "4 - exit")
@@ -79,9 +82,9 @@ def main():
     user_action = input()
     match user_action:
       case "1":
-        pass
+        ScoreBoard.show_scores()
       case "2":
-        pass
+        Game.print_rules()
       case "3":
         game_round()
       case "4":

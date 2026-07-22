@@ -2,3 +2,4 @@ __pycache__
 pos_readme.md
 .venv
 .pytest_cache
+scoreboard.json
