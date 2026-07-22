@@ -1,41 +1,90 @@
 from webScraper import WebScraper, notFound
 from game import Game
+from utils import *
 
 def game_round():
   first_page = WebScraper.get_random_page()
+  first_page_title = WebScraper.get_title(first_page)
   target_page = WebScraper.get_ending_page()
+  target_page_title = WebScraper.get_title(target_page)
 
-  game = Game(first_page, target_page)
+  game = Game(first_page, first_page_title, target_page, target_page_title)
 
   while(game.won == False):
-    pass
-    # pega o título da página e printa
-    # armazena o título nas páginas passadas
-    # pega os links da página em uma lista e printa eles
-      # se não tiver links, é gamewover
+    # round set up
+    current_page = WebScraper.get_title_and_links(game.current_url)
+
+    prSeparator()
+    prPageName(f"Target: {game.target_name}")
+    prWarning(f"Round {game.round}")
+    prWarning("Current page:")
+
+    # title print
+    prPageName(current_page["title"])
     
-    # usuário escolhe uma próximo página
-      # confere se é o objetivo
-        # se sim, vai pra função de finalizar jogo
-        # se não, vai para a próxima iteração
-    # usuário pode desistir -> chama função de finalizar
+    # links print
+    i = 0
+    prWarning("\nLinks in it:")
+    for link in current_page["links"]:
+      print(f'{i} - {link[TITLE]}') 
+      i +=1
+    
+    if i == 0:
+      prError("You've reach a page that has no links! Game over!")
+      break
+    
+    # user input
+    print("\n Chose a number to go to that page.\n" \
+    "('exit' to give up, 'history' to see all pages visited)")
+    while True:
+      try:
+        user_action = int(input())
+      except ValueError:
+        print("Invalid input! Choose a number or a special command!")
+
+      if user_action == 'exit':
+        break
+
+      elif user_action == 'history':
+        game.show_history()
+
+      else:
+        try:
+          if user_action <= 0: raise IndexError
+          next_page = current_page["links"][user_action]
+          game.register_page(next_page)
+          break
+        except IndexError:
+          print("invalid number! Choose one in range")
 
   game.end_game()
 
 
 def main():
+  prWelcome("Welcome to the wikipedia game!") 
   while True:
-    print("Welcome to the wikipedia game?\n" \
-    "What do ou want to do?\n" \
+    print("What do ou want to do?\n" \
     "1 - see ranking\n" \
-    "2 - play new game\n" \
-    "3 - exit\n")
+    "2 - see game rules\n" \
+    "3 - play new game\n" \
+    "4 - exit")
 
     user_action = input()
-    
-  # mensagem de boas vindas
-  # ver histórico
-  # novo jogo
+    match user_action:
+      case "1":
+        pass
+      case "2":
+        pass
+      case "3":
+        game_round()
+      case "4":
+        break
+      case _:
+        prError("Invalid option! Choose again")
+  
+  
+  prSeparator()
+  print("Thank you for playing!\n")
 
 def testes():
   url = 'https://en.wikipedia.org/wiki/The_BMJ'
@@ -48,4 +97,4 @@ def testes():
   print(WebScraper.get_vital_articles())
 
 if __name__ == "__main__":
-  testes()
+  main()

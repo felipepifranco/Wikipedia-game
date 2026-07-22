@@ -36,6 +36,6 @@ class Test_WebScraper():
     vital_url = "https://en.wikipedia.org/wiki/Wikipedia:Vital_articles/Level_3"
     vital_pages = WebScraper.get_title_and_links(vital_url)["links"]
     
-    random_title = WebScraper.get_title_and_links(random_page)["title"]
+    random_title = WebScraper.get_title(random_page)
 
     assert (random_title, random_page) in vital_pages

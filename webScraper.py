@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 
 class notFound(Exception):
   # print(page.status_code
@@ -8,6 +9,22 @@ class notFound(Exception):
 class WebScraper:
   headers = {'User-Agent': 'WikipediaGameBot/0.0 (https://github.com/felipepifranco/Wikipedia-game.git)'}
 
+  @staticmethod
+  def get_title(url):
+    '''gets the title of the page'''
+    
+    res = requests.get(url, headers=WebScraper.headers)
+    soup = BeautifulSoup(res.content, 'html.parser')
+    
+    # title
+    title_content = soup.find('title')
+    if title_content:
+      main_title =  title_content.text.strip().replace(" - Wikipedia", "")
+    else:
+      raise notFound("page not found")
+    
+    return main_title
+  
   @staticmethod
   def get_title_and_links(url):
     '''gets the title of the page'''
@@ -24,18 +41,20 @@ class WebScraper:
     
     # links
     body = soup.find(id="bodyContent")
-    links = [] # tuple list (title, link)
+    links = [] # tuple list (title, url)
+    i = 0
     if body:
-      print("AAAAAAAAAAAAAa")
       for tag in body.find_all('a', href=True):
         href = tag['href']
 
-        if '/wiki/' in href and ':' not in href.replace("https:", ""):
-          if href.startswith('/wiki/'):
-            href = f"https://en.wikipedia.org{href}"
-                    
-          link_title = tag.get('title', href.replace('/wiki/', ''))
-          links.append((link_title, href))
+        if '/wiki/' in href and ':' not in href.replace("https:", "") and 'wikidata' not in href:
+          full_url = urljoin('https://en.wikipedia.org', href)
+          title_from_url = (href.split('/wiki/')[-1].replace('_', ' '))
+          link_title = tag.get('title', title_from_url)
+
+          links.append((link_title, full_url))
+          i += 1
+          if i >= 500: break
     else:
       raise notFound("Invalid page")  
     
